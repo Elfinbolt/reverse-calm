@@ -21,7 +21,7 @@ from model import layers
 from model import utils
 import torch
 import transformers
-
+from transformers.generation import GenerationMixin
 
 class CALMConfig(transformers.PretrainedConfig):
   """CALM configuration.
@@ -73,7 +73,7 @@ class CALMConfig(transformers.PretrainedConfig):
     super().__init__(**kwargs)
 
 
-class CALM(transformers.PreTrainedModel):
+class CALM(transformers.PreTrainedModel,GenerationMixin):
   """CALM implementation.
 
   Class for composing the anchor and augmented models. The class is designed to
@@ -83,6 +83,10 @@ class CALM(transformers.PreTrainedModel):
 
   config_class = CALMConfig
 
+  @property
+  def device(self):
+    return next(self.parameters()).device
+  
   @property
   def lm_head(self):
     """Returns the language model head."""
@@ -113,11 +117,16 @@ class CALM(transformers.PreTrainedModel):
           config.aug_model
       )
     if isinstance(config.anchor_config, dict):
-      config.anchor_config = transformers.GemmaConfig.from_dict(
-          config.anchor_config
-      )
+      config.anchor_config = transformers.AutoConfig.for_model(
+        config.anchor_config["model_type"],
+        **config.anchor_config
+    )
+
     if isinstance(config.aug_config, dict):
-      config.aug_config = transformers.GemmaConfig.from_dict(config.aug_config)
+      config.aug_config = transformers.AutoConfig.for_model(
+        config.aug_config["model_type"],
+        **config.aug_config
+    )
 
     self.anchor_model = transformers.AutoModelForCausalLM.from_pretrained(
         config.anchor_model,
@@ -127,6 +136,7 @@ class CALM(transformers.PreTrainedModel):
         config.aug_model,
         config=config.aug_config,
     )
+    self.generation_config = self.anchor_model.generation_config
     self.vocab_size = self.anchor_model.config.vocab_size
     self.config = config
     self.num_anchor_layers = len(self.anchor_model.model.layers)
