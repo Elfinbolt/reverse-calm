@@ -128,8 +128,10 @@ class CrossAttentionHook(torch.nn.Module):
     print("Aug hidden dtype:", self.aug_hidden_state.dtype)
     print("Proj weight dtype:", self.proj.weight.dtype)
     
-    key = self.proj(self.aug_hidden_state)
-    value = self.proj(self.aug_hidden_state)
+    aug_hidden = self.aug_hidden_state.to(self.proj.weight.dtype)
+
+    key = self.proj(aug_hidden)
+    value = self.proj(aug_hidden)
 
     self.aug_mask = self.aug_mask.float()
     attn_output, attn_weights = self.cross_attention(
