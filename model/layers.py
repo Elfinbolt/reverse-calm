@@ -125,9 +125,6 @@ class CrossAttentionHook(torch.nn.Module):
     assert self.aug_hidden_state is not None
     assert self.aug_mask is not None
     
-    print("Aug hidden dtype:", self.aug_hidden_state.dtype)
-    print("Proj weight dtype:", self.proj.weight.dtype)
-    
     aug_hidden = self.aug_hidden_state.to(self.proj.weight.dtype)
 
     key = self.proj(aug_hidden)
@@ -141,11 +138,6 @@ class CrossAttentionHook(torch.nn.Module):
     self.cross_attention = self.cross_attention.to(query.dtype)
 
     self.aug_mask = self.aug_mask.float()
-
-    print("Query dtype:", query.dtype)
-    print("Key dtype:", key.dtype)
-    print("Value dtype:", value.dtype)
-    print("MHA weight dtype:", self.cross_attention.in_proj_weight.dtype)
 
     attn_output, attn_weights = self.cross_attention(
         query,
