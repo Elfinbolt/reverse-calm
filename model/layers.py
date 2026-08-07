@@ -159,8 +159,11 @@ class CrossAttentionHook(torch.nn.Module):
 
     attn_output = self.post_attention_layernorm(attn_output)
     output_fin = attn_output + query
-    new_output = (output_fin,) + output[1:]
-    return new_output
+
+    if isinstance(output, tuple):
+        return (output_fin,) + output[1:]
+    else:
+        return output_fin
 
 
 class ExtractHiddenStateHook(torch.nn.Module):
