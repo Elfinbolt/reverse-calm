@@ -124,6 +124,10 @@ class CrossAttentionHook(torch.nn.Module):
     query, output = process_hook_args(*hook_args)
     assert self.aug_hidden_state is not None
     assert self.aug_mask is not None
+    
+    print("Aug hidden dtype:", self.aug_hidden_state.dtype)
+    print("Proj weight dtype:", self.proj.weight.dtype)
+    
     key = self.proj(self.aug_hidden_state)
     value = self.proj(self.aug_hidden_state)
 
