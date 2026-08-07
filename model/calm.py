@@ -426,12 +426,29 @@ class CALM(transformers.PreTrainedModel,GenerationMixin):
     past_length = 0
     if past_key_values is not None:
       if isinstance(past_key_values, transformers.Cache):
-        past_length = cache_position[0] if cache_position is not None else past_key_values.get_seq_length()  # pylint: disable=line-too-long
-        max_cache_length = (
-            torch.tensor(past_key_values.get_max_length(), device=input_ids.device)  # pylint: disable=line-too-long
-            if past_key_values.get_max_length() is not None
-            else None
+
+        past_length = (
+            cache_position[0]
+            if cache_position is not None
+            else past_key_values.get_seq_length()
         )
+
+        # Compatible with old and new Transformers versions
+        if hasattr(past_key_values, "get_max_cache_shape"):
+            max_cache = past_key_values.get_max_cache_shape()
+        elif hasattr(past_key_values, "get_max_length"):
+            max_cache = past_key_values.get_max_length()
+        else:
+            max_cache = None
+
+        if max_cache is not None:
+            max_cache_length = torch.tensor(
+            max_cache,
+            device=input_ids.device,
+            )
+        else:
+            max_cache_length = None
+
         cache_length = (
             past_length
             if max_cache_length is None
