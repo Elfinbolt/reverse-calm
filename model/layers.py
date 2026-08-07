@@ -134,6 +134,12 @@ class CrossAttentionHook(torch.nn.Module):
     value = self.proj(aug_hidden)
 
     self.aug_mask = self.aug_mask.float()
+    
+    print("Query dtype:", query.dtype)
+    print("Key dtype:", key.dtype)
+    print("Value dtype:", value.dtype)
+    print("MHA weight dtype:", self.cross_attention.in_proj_weight.dtype)
+    
     attn_output, attn_weights = self.cross_attention(
         query, key, value, need_weights=True
     )
