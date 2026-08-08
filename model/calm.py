@@ -251,7 +251,7 @@ class CALM(transformers.PreTrainedModel,GenerationMixin):
           input_ids=input_ids,
           attention_mask=attention_mask,
           position_ids=position_ids,
-          past_key_values=past_key_values,
+          past_key_values=None,            
           inputs_embeds=inputs_embeds,
           labels=labels,
           use_cache=use_cache,
@@ -453,7 +453,7 @@ class CALM(transformers.PreTrainedModel,GenerationMixin):
             past_length
             if max_cache_length is None
             else torch.min(max_cache_length, past_length)
-        )
+          )
       else:
         cache_length = past_length = past_key_values[0][0].shape[2]
         max_cache_length = None
