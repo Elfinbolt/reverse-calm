@@ -209,6 +209,10 @@ class CALM(transformers.PreTrainedModel,GenerationMixin):
       input_ids: torch.LongTensor = None,
       attention_mask: Optional[torch.Tensor] = None,
       position_ids: Optional[torch.LongTensor] = None,
+      aug_input_ids: torch.LongTensor = None,
+      aug_attention_mask: Optional[torch.Tensor] = None,
+      aug_position_ids: Optional[torch.LongTensor] = None,
+
       past_key_values: Optional[
           Union[transformers.Cache, List[torch.FloatTensor]]
       ] = None,
@@ -248,9 +252,9 @@ class CALM(transformers.PreTrainedModel,GenerationMixin):
     with torch.no_grad():
       self.aug_model.eval()
       output = self.aug_model(
-          input_ids=input_ids,
-          attention_mask=attention_mask,
-          position_ids=position_ids,
+          input_ids=aug_input_ids,
+          attention_mask=aug_attention_mask,
+          position_ids=aug_position_ids,
           past_key_values=None,            
           inputs_embeds=inputs_embeds,
           labels=labels,
@@ -267,7 +271,7 @@ class CALM(transformers.PreTrainedModel,GenerationMixin):
         self.cross_attention_hooks[connection_idx].aug_hidden_state = (
             aug_hidden_state
         )
-        self.cross_attention_hooks[connection_idx].aug_mask = attention_mask
+        self.cross_attention_hooks[connection_idx].aug_mask = aug_attention_mask
         del aug_hidden_state
     return output
 
@@ -276,6 +280,9 @@ class CALM(transformers.PreTrainedModel,GenerationMixin):
       input_ids: torch.LongTensor = None,
       attention_mask: Optional[torch.Tensor] = None,
       position_ids: Optional[torch.LongTensor] = None,
+      aug_input_ids: torch.LongTensor = None,
+      aug_attention_mask: Optional[torch.Tensor] = None,
+      aug_position_ids: Optional[torch.LongTensor] = None,
       past_key_values: Optional[
           Union[transformers.Cache, List[torch.FloatTensor]]
       ] = None,
@@ -323,6 +330,9 @@ class CALM(transformers.PreTrainedModel,GenerationMixin):
         input_ids=input_ids,
         attention_mask=attention_mask,
         position_ids=position_ids,
+        aug_input_ids=aug_input_ids,
+        aug_attention_mask=aug_attention_mask,
+        aug_position_ids=aug_position_ids,
         past_key_values=past_key_values,
         inputs_embeds=inputs_embeds,
         labels=labels,
