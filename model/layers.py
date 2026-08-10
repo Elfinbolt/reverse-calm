@@ -125,8 +125,11 @@ class CrossAttentionHook(torch.nn.Module):
     assert self.aug_hidden_state is not None
     assert self.aug_mask is not None
     
-    aug_hidden = self.aug_hidden_state.to(self.proj.weight.dtype)
-
+    aug_hidden = self.aug_hidden_state.to(
+        device=self.proj.weight.device,
+        dtype=self.proj.weight.dtype,
+    )
+    
     key = self.proj(aug_hidden)
     value = self.proj(aug_hidden)
 
