@@ -344,6 +344,11 @@ class CALM(transformers.PreTrainedModel,GenerationMixin):
         )
     del aug_output
 
+    print("=== BEFORE ANCHOR MODEL ===")
+    print("input_ids shape:", input_ids.shape if input_ids is not None else None)
+    print("attention_mask shape:", attention_mask.shape if attention_mask is not None else None)
+    print("inputs_embeds:", inputs_embeds.shape if inputs_embeds is not None else None)
+    
     output = self.anchor_model(
         input_ids=input_ids,
         attention_mask=attention_mask,
