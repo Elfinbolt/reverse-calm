@@ -257,7 +257,7 @@ class CALM(transformers.PreTrainedModel,GenerationMixin):
           position_ids=aug_position_ids,
           past_key_values=None,            
           inputs_embeds=inputs_embeds,
-          labels=labels,
+          labels=None,
           use_cache=use_cache,
           output_attentions=output_attentions,
           output_hidden_states=output_hidden_states,
