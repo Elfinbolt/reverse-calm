@@ -137,8 +137,6 @@ class CrossAttentionHook(torch.nn.Module):
     key = key.to(query.dtype)
     value = value.to(query.dtype)
 
-    # Move attention module to the same dtype
-    self.cross_attention = self.cross_attention.to(query.dtype)
 
     self.aug_mask = self.aug_mask.float()
 
@@ -149,8 +147,6 @@ class CrossAttentionHook(torch.nn.Module):
         need_weights=True,
     )
     self.attn_weights = attn_weights
-
-    self.post_attention_layernorm = self.post_attention_layernorm.to(query.dtype)
 
     attn_output = self.post_attention_layernorm(attn_output)
     output_fin = attn_output + query
