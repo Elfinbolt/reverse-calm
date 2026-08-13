@@ -133,22 +133,27 @@ class CrossAttentionHook(torch.nn.Module):
     key = self.proj(aug_hidden)
     value = self.proj(aug_hidden)
 
-    # Make everything use the anchor/query dtype
-    key = key.to(query.dtype)
-    value = value.to(query.dtype)
-
+    # Keep trainable bridge computation in FP32
+    query_fp32 = query.float()
+    key_fp32 = key.float()
+    value_fp32 = value.float()
 
     self.aug_mask = self.aug_mask.float()
 
     attn_output, attn_weights = self.cross_attention(
-        query,
-        key,
-        value,
+        query_fp32,
+        key_fp32,
+        value_fp32,
         need_weights=True,
     )
     self.attn_weights = attn_weights
 
-    attn_output = self.post_attention_layernorm(attn_output)
+    attn_output = self.post_attention_layernorm(
+        attn_output.float()
+    )
+
+    attn_output = attn_output.to(query.dtype)
+
     output_fin = attn_output + query
 
     if isinstance(output, tuple):
