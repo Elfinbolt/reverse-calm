@@ -535,7 +535,12 @@ class CALM(transformers.PreTrainedModel,GenerationMixin):
         "attention_mask": attention_mask,
     })
     
-    # Forward any additional kwargs (like aug_input_ids, aug_attention_mask)
-    model_inputs.update(kwargs)
+    # Forward ONLY the specific CALM additional kwargs, dropping things like is_first_iteration
+    if "aug_input_ids" in kwargs:
+        model_inputs["aug_input_ids"] = kwargs["aug_input_ids"]
+    if "aug_attention_mask" in kwargs:
+        model_inputs["aug_attention_mask"] = kwargs["aug_attention_mask"]
+    if "aug_position_ids" in kwargs:
+        model_inputs["aug_position_ids"] = kwargs["aug_position_ids"]
 
     return model_inputs
