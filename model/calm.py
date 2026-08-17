@@ -534,5 +534,8 @@ class CALM(transformers.PreTrainedModel,GenerationMixin):
         "use_cache": use_cache,
         "attention_mask": attention_mask,
     })
+    
+    # Forward any additional kwargs (like aug_input_ids, aug_attention_mask)
+    model_inputs.update(kwargs)
 
     return model_inputs
