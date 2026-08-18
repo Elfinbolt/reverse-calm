@@ -252,6 +252,12 @@ class CALM(transformers.PreTrainedModel,GenerationMixin):
     with torch.no_grad():
       self.aug_model.eval()
       
+      # Simple caching: if aug_input_ids is exactly the same tensor as last time, skip the 14B forward pass!
+      if hasattr(self, "_last_aug_input_ids") and self._last_aug_input_ids is not None and aug_input_ids is not None:
+          if torch.equal(self._last_aug_input_ids, aug_input_ids):
+              return None
+      self._last_aug_input_ids = aug_input_ids
+      
       aug_device = next(self.aug_model.parameters()).device
       if cache_position is not None:
           cache_position = cache_position.to(aug_device)
