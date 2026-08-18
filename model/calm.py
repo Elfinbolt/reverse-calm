@@ -251,6 +251,17 @@ class CALM(transformers.PreTrainedModel,GenerationMixin):
 
     with torch.no_grad():
       self.aug_model.eval()
+      
+      aug_device = next(self.aug_model.parameters()).device
+      if cache_position is not None:
+          cache_position = cache_position.to(aug_device)
+      if aug_position_ids is not None:
+          aug_position_ids = aug_position_ids.to(aug_device)
+      if aug_input_ids is not None:
+          aug_input_ids = aug_input_ids.to(aug_device)
+      if aug_attention_mask is not None:
+          aug_attention_mask = aug_attention_mask.to(aug_device)
+          
       output = self.aug_model(
           input_ids=aug_input_ids,
           attention_mask=aug_attention_mask,
